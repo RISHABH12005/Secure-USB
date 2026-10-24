@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "securemusic-usb"
+version = "1.0.0"
+description = "Password-protected AES-256-GCM encrypted music and file vault with a dark Tkinter interface"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["cryptography>=42.0.0"]
+keywords = ["encryption", "vault", "usb", "music", "tkinter", "aes-gcm", "scrypt"]
+classifiers = [
+    "Environment :: Win32 (MS Windows)",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Multimedia :: Sound/Audio :: Players",
+]
+
+[project.gui-scripts]
+securemusic-usb = "securemusic.ui:main"
+
+[tool.setuptools]
+packages = ["securemusic"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["securemusic", "tests"]
