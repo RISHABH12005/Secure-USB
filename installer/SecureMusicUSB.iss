@@ -1,17 +1,17 @@
 #define MyAppName "SecureMusic USB"
 #define MyAppVersion "1.0.0"
 #define MyPublisher "SecureMusic USB"
-#define MyExeName "SecureMusicUSB.exe"
+#define MyExeName "SecureUSB.exe"
 
 [Setup]
 AppId={{A4DCA7B9-76B7-4A20-A7E2-4FBD7E9D1134}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyPublisher}
-DefaultDirName={autopf}\SecureMusicUSB
+DefaultDirName={autopf}\SecureUSB
 DefaultGroupName={#MyAppName}
 OutputDir=output
-OutputBaseFilename=SecureMusicUSB-Setup
+OutputBaseFilename=SecureUSB-Setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
