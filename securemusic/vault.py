@@ -38,7 +38,7 @@ from .errors import (
     InsufficientSpaceError,
     InvalidFilenameError,
     PasswordPolicyError,
-    SecureMusicError,
+    SecureUSBError,
     UnknownFileError,
     VaultChangedError,
     VaultFormatError,
@@ -437,7 +437,7 @@ class VaultSession:
                 raise UnknownFileError("No files were selected.")
             dest = Path(destination)
             if not dest.is_dir():
-                raise SecureMusicError(
+                raise SecureUSBError(
                     f"The destination folder {str(dest)!r} does not exist."
                 )
 
