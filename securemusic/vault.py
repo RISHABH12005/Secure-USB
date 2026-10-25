@@ -77,6 +77,10 @@ STALE_PAYLOAD_PREFIXES = (
     "secureusb-payload-",
     "secureusb-new-",
     "secureusb-empty-",
+    # Legacy prefixes remain eligible for cleanup after an upgrade.
+    "securemusic-payload-",
+    "securemusic-new-",
+    "securemusic-empty-",
 )
 STALE_PAYLOAD_MAX_AGE = 24 * 60 * 60
 
