@@ -425,9 +425,10 @@ class SafetyDialog(tk.Toplevel):
                     "Originals are never moved or deleted. Adding a file reads it and stores an "
                     "encrypted copy in the vault. It does not move, modify, or delete your "
                     "original. Deleting from the vault does not touch files outside the vault.",
-                    "Backups are encrypted. Before each change, the app copies the current "
-                    "encrypted vault to a timestamped .backup file next to it and verifies the "
-                    "copy. Those backups need the same password.",
+                    "Backups are encrypted. Before deleting files from the vault, the app "
+                    "copies the current encrypted vault to a timestamped .backup file next to it "
+                    "and verifies the copy. Adds and renames do not create automatic backups. "
+                    "Manual Backup now remains available. Backups need the same password.",
                     "Password loss is permanent. There is no recovery key, and no one can "
                     "decrypt the vault without the password. Keep an offline copy of the password.",
                     "Cannot distinguish wrong password from damage. AES-GCM reports the same "
