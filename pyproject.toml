@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "securemusic-usb"
+name = "secureusb"
 version = "1.0.0"
-description = "Password-protected AES-256-GCM encrypted music and file vault with a dark Tkinter interface"
+description = "Password-protected AES-256-GCM encrypted file vault with a dark Tkinter interface"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = ["cryptography>=42.0.0"]
@@ -21,7 +21,7 @@ classifiers = [
 ]
 
 [project.gui-scripts]
-securemusic-usb = "securemusic.ui:main"
+secureusb = "securemusic.ui:main"
 
 [tool.setuptools]
 packages = ["securemusic"]
