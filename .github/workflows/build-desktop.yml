@@ -1,4 +1,4 @@
-name: Test and package SecureMusic USB
+name: Test and package SecureUSB
 
 on:
   pull_request:
@@ -46,11 +46,11 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-            artifact: SecureMusicUSB-Windows
+            artifact: SecureUSB-Windows
           - os: macos-latest
-            artifact: SecureMusicUSB-macOS
+            artifact: SecureUSB-macOS
           - os: ubuntu-latest
-            artifact: SecureMusicUSB-Linux
+            artifact: SecureUSB-Linux
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -74,7 +74,7 @@ jobs:
         shell: pwsh
         run: |
           choco install innosetup --no-progress -y
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/SecureMusicUSB.iss
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/SecureUSB.iss
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build macOS app bundle
         if: runner.os == 'macOS'
@@ -96,7 +96,7 @@ jobs:
         run: mkdir -p release-files && cp dist/SecureUSB-macOS.zip release-files/
       - name: Stage Linux download
         if: runner.os == 'Linux'
-        run: mkdir -p release-files && cp dist/SecureMusicUSB release-files/SecureUSB-Linux
+        run: mkdir -p release-files && cp dist/SecureUSB release-files/SecureUSB-Linux
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
