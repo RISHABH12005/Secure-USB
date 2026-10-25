@@ -43,43 +43,29 @@ does not hide files on the drive, and does not bypass formatting or autorun limi
 - **No third-party security audit.** This is a practical personal tool, not a replacement for
   professionally reviewed full-disk encryption.
 
-## Requirements
-
-- Windows 10 or 11
-- Python 3.10 or newer with Tcl/Tk
-- [`cryptography`](https://cryptography.io/) 42 or newer
-
-The test suite was run on Windows 11 with Python 3.13.15, Tk 8.6, and cryptography 50.0.2.
-
 ## Install
 
-From Command Prompt or PowerShell in this folder:
+### Windows installer (recommended)
+
+Download `SecureMusicUSB-Setup.exe` from the latest successful workflow artifact or from GitHub Releases. Run the Setup wizard and follow its prompts. The standalone `SecureMusicUSB.exe` is also provided. These builds are not code-signed by default, so Windows SmartScreen may show a warning.
+
+### macOS and Linux
+
+Download the matching artifact from the repository's Actions tab after a successful build, or from a tagged GitHub Release. macOS builds are not signed/notarized by default. Linux support depends on the desktop environment and system libraries.
+
+### Android and iPhone/iPad
+
+**Mobile install packages are not available yet.** The current application uses Tkinter, which is a desktop UI. Android needs an APK built from a dedicated mobile app; iPhone/iPad requires an iOS app and Apple signing/distribution. See [PLATFORM_SUPPORT.md](PLATFORM_SUPPORT.md) for the platform plan.
+
+### Run from source (Windows)
+
+If you prefer to run the Python source instead of installing the packaged app, use Python 3.10 or newer with Tcl/Tk:
 
 ```bat
 py -m venv .venv
-.venv\Scripts\python -m pip install --upgrade pip
-.venv\Scripts\python -m pip install -r requirements.txt
-```
-
-## Run
-
-```bat
-.venv\Scripts\python securemusic_usb.py
-```
-
-or:
-
-```bat
-.venv\Scripts\python -m securemusic
-```
-
-The launcher prints an installation hint if `cryptography` or Tkinter is missing.
-
-To install it as a packaged local command:
-
-```bat
-.venv\Scripts\python -m pip install .
-.venv\Scripts\securemusic-usb.exe
+.venv\\Scripts\\python -m pip install --upgrade pip
+.venv\\Scripts\\python -m pip install -r requirements.txt
+.venv\\Scripts\\python securemusic_usb.py
 ```
 
 ## First use
