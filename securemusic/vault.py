@@ -74,9 +74,9 @@ ATOMIC_REPLACE = os.replace
 # They are removed on startup once they are old enough not to belong to a
 # concurrent instance.
 STALE_PAYLOAD_PREFIXES = (
-    "securemusic-payload-",
-    "securemusic-new-",
-    "securemusic-empty-",
+    "secureusb-payload-",
+    "secureusb-new-",
+    "secureusb-empty-",
 )
 STALE_PAYLOAD_MAX_AGE = 24 * 60 * 60
 
@@ -202,7 +202,7 @@ class VaultSession:
             )
 
         password_bytes = _password_to_bytes(password)
-        zip_fd, zip_path = tempfile.mkstemp(prefix="securemusic-empty-", suffix=".zip")
+        zip_fd, zip_path = tempfile.mkstemp(prefix="secureusb-empty-", suffix=".zip")
         os.close(zip_fd)
         tmp_fd, tmp_path = tempfile.mkstemp(
             prefix=f".{vault_path.name}.tmp-", dir=str(vault_path.parent)
@@ -280,7 +280,7 @@ class VaultSession:
             header = crypto.read_header(vault_path)
             signature = _signature(vault_path)
             payload_fd, payload_path = tempfile.mkstemp(
-                prefix="securemusic-payload-", suffix=".zip"
+                prefix="secureusb-payload-", suffix=".zip"
             )
             os.close(payload_fd)
             payload_fd = None
@@ -558,7 +558,7 @@ class VaultSession:
             self._ensure_unlocked()
             self._verify_unchanged()
             fd, payload_path = tempfile.mkstemp(
-                prefix="securemusic-payload-", suffix=".zip"
+                prefix="secureusb-payload-", suffix=".zip"
             )
             os.close(fd)
             try:
@@ -580,7 +580,7 @@ class VaultSession:
             self._ensure_unlocked()
             self._verify_unchanged()
             new_fd, new_zip_path = tempfile.mkstemp(
-                prefix="securemusic-new-", suffix=".zip"
+                prefix="secureusb-new-", suffix=".zip"
             )
             os.close(new_fd)
             try:
@@ -652,7 +652,7 @@ class VaultSession:
             if candidate.exists():
                 continue
             temp_candidate = self._path.with_name(
-                f".securemusic-backup-{secrets.token_hex(6)}.tmp"
+                f".secureusb-backup-{secrets.token_hex(6)}.tmp"
             )
             try:
                 digest = hashlib.sha256()
@@ -880,7 +880,7 @@ def _extract_member(
 
     if overwrite:
         fd, tmp_path = tempfile.mkstemp(
-            prefix=".securemusic-extract-", dir=str(target.parent)
+            prefix=".secureusb-extract-", dir=str(target.parent)
         )
         try:
             with os.fdopen(fd, "wb") as dst, archive.open(info, "r") as src:
