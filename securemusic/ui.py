@@ -528,7 +528,7 @@ class SecureMusicApp:
         ).pack(anchor="w")
         tk.Label(
             title_block,
-            text="AES-256-GCM encrypted vault for music and personal files",
+            text="Password-protected AES-256-GCM vault for documents, folders, code, photos, videos and audio",
             bg=BG,
             fg=MUTED,
             font=(FONT, 10),
@@ -671,7 +671,7 @@ class SecureMusicApp:
         player_shell.grid(row=0, column=0, sticky="ew")
         tk.Label(
             player_card,
-            text="Music player",
+            text="Media preview",
             bg=SURFACE,
             fg=FG,
             font=(FONT, 11, "bold"),
@@ -688,9 +688,9 @@ class SecureMusicApp:
         tk.Label(
             player_card,
             text=(
-                "Playing uses a temporary decrypted copy because external players "
-                "cannot read the vault. The copy is deleted when you lock or exit, "
-                "or with the button below, when Windows allows it."
+                "Audio and video files open in an external player using a temporary decrypted "
+                "copy. The copy is removed when you lock or exit, or with Clean temp "
+                "files, when Windows allows it."
             ),
             bg=SURFACE,
             fg=MUTED,
@@ -1063,9 +1063,9 @@ class SecureMusicApp:
             parent=self.root,
             title="Create an encrypted vault",
             initialdir=str(self._last_dir),
-            initialfile="music-vault.smusb",
+            initialfile="SecureUSB-vault.smusb",
             defaultextension=".smusb",
-            filetypes=[("SecureMusic vault", "*.smusb"), ("All files", "*.*")],
+            filetypes=[("SecureUSB encrypted vault", "*.smusb"), ("All files", "*.*")],
         )
         if not path:
             return
@@ -1104,10 +1104,10 @@ class SecureMusicApp:
             return
         path = filedialog.askopenfilename(
             parent=self.root,
-            title="Open a SecureMusic vault",
+            title="Open a SecureUSB vault",
             initialdir=str(self._last_dir),
             filetypes=[
-                ("SecureMusic vault", "*.smusb"),
+                ("SecureUSB encrypted vault", "*.smusb"),
                 ("All files", "*.*"),
             ],
         )
@@ -1136,7 +1136,7 @@ class SecureMusicApp:
         count = len(session.list_files())
         if created:
             self._set_status(
-                "Vault created and unlocked. Add songs or files to encrypt them.",
+                "Vault created and unlocked. Add files to encrypt them.",
                 "success",
             )
         else:
@@ -1182,7 +1182,7 @@ class SecureMusicApp:
             return
         paths = filedialog.askopenfilenames(
             parent=self.root,
-            title="Select files to encrypt",
+            title="Select files to add to your encrypted vault",
             initialdir=str(self._last_dir),
         )
         if not paths:
