@@ -11,12 +11,23 @@ from tests.support import PASSWORD, TEST_KDF
 
 
 def _tk_available() -> bool:
+    root = None
     try:
         root = tk.Tk()
-    except tk.TclError:
+        root.withdraw()
+        root.update_idletasks()
+        return True
+    except (tk.TclError, RuntimeError, OSError):
+        # Some hosted Windows runners ship a Python build whose Tcl/Tk runtime
+        # cannot initialize. Skip only the UI smoke test in that environment;
+        # the crypto, vault, and file-operation tests still run normally.
         return False
-    root.destroy()
-    return True
+    finally:
+        if root is not None:
+            try:
+                root.destroy()
+            except tk.TclError:
+                pass
 
 
 TK_AVAILABLE = _tk_available()
