@@ -1,1 +1,1 @@
-"""Test package for SecureMusic USB."""
+"""Test package for SecureUSB."""
