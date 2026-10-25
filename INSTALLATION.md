@@ -1,18 +1,18 @@
-# Installing SecureMusic USB
+# Installing SecureUSB
 
-SecureMusic USB is currently a desktop application. Builds must be created separately for each operating system; a Windows executable does not run natively on Android, iOS, macOS, or Linux.
+SecureUSB is currently a desktop application. Builds must be created separately for each operating system; a Windows executable does not run natively on Android, iOS, macOS, or Linux.
 
 ## Download a build
 
 1. Open the repository's **Actions** tab.
-2. Select **Build desktop installers** and choose **Run workflow**, or push a version tag such as `v1.0.1`.
+2. Select **Test and package SecureUSB** and choose **Run workflow**, or push a version tag such as `v1.0.1`.
 3. Wait for all test-and-build jobs to finish successfully.
 4. Open the completed workflow run and download the artifact for your operating system:
-   - `SecureMusicUSB-Windows`
-   - `SecureMusicUSB-macOS`
-   - `SecureMusicUSB-Linux`
+   - `SecureUSB-Windows`
+   - `SecureUSB-macOS`
+   - `SecureUSB-Linux`
 
-Artifacts from a manual workflow run are temporary (14 days). This workflow currently uploads Actions artifacts; it does not yet publish a GitHub Release.
+Artifacts from a manual workflow run are temporary (14 days). A tagged build publishes release assets when the workflow completes successfully.
 
 ## Run from source on Windows
 
