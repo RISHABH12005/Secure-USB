@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-24.04]
+        os: [windows-latest, macos-15-intel, ubuntu-24.04]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
@@ -47,7 +47,7 @@ jobs:
         include:
           - os: windows-latest
             artifact: SecureUSB-Windows
-          - os: macos-latest
+          - os: macos-15-intel
             artifact: SecureUSB-macOS
           - os: ubuntu-24.04
             artifact: SecureUSB-Linux
