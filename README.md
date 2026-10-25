@@ -13,7 +13,7 @@ does not hide files on the drive, and does not bypass formatting or autorun limi
 - List, rename, delete, and extract files.
 - Play a selected song with the Windows default player or a player you choose.
 - Create an extra encrypted backup at any time.
-- Automatic, verified encrypted backup before every change.
+- Automatic, verified encrypted backup before deleting files; adds and renames do not create backups.
 - Streaming encryption, so large vaults are not loaded into memory.
 - Safe filenames, case-insensitive duplicate detection, and path-traversal protection.
 - Background work with progress dialogs, so the window does not freeze during scrypt or I/O.
@@ -103,7 +103,7 @@ To install it as a packaged local command:
 | Add files | Rejects folders, duplicates get `name (1).ext`, unsafe names are sanitised. |
 | Extract selected | Never overwrites unless you explicitly choose **Yes**. **No** creates numbered copies. |
 | Rename | Validates the new name and rejects case-insensitive duplicates. |
-| Delete from vault | Creates a verified encrypted backup first. Originals outside the vault are untouched. |
+| Delete from vault | Creates and verifies an encrypted backup first; deletion stops if the backup fails. Originals outside the vault are untouched. |
 | Play / Play with... | Writes a temporary decrypted copy, then launches a player. |
 | Backup now | Extra verified encrypted copy next to the vault. |
 | Safety & limits | Full warning list inside the app. |
@@ -140,13 +140,13 @@ end-16  16    AES-GCM authentication tag
 
 ### Safe updates
 
-Every add, rename, or delete follows this sequence:
+Every add, rename, or delete uses a temporary archive and atomic replacement. Only deletion creates an automatic backup.
 
 1. Decrypt the current vault into a private temporary zip.
 2. Verify the vault has not changed on disk since unlock.
 3. Build and validate the new archive (safe names, no duplicates, size limit).
-4. Check free space.
-5. Copy the current encrypted vault to a backup and verify its size and SHA-256.
+4. Check free space for the temporary update; deletion also reserves space for a backup.
+5. For deletion only, copy the current encrypted vault to a backup and verify its size and SHA-256.
 6. Encrypt the new archive to a temporary file, fsync it, and atomically replace the vault.
 7. Refresh the on-disk signature.
 
@@ -155,6 +155,7 @@ to the vault is detected by size, modification time, and a SHA-256 hash of the f
 
 ### Backups and recovery
 
+- Only deletion creates automatic backups. Adds and renames do not create extra copies.
 - Automatic backups are named like
   `music.backup-20261024-214530-a1b2c3.smusb`, next to the vault.
 - Backups are encrypted with the same password as the vault.
@@ -250,7 +251,7 @@ requirements-build.txt   optional PyInstaller dependency
   correct, the vault is damaged; use a backup.
 - **"Vault changed outside this application"** — another program changed the vault. The app
   locks it for safety. Reopen it.
-- **Not enough free space** — the app needs room for the new vault, the old vault, and a backup.
+- **Not enough free space** — updates need room for temporary rewrite files; deletion also needs room for a verified backup of the current vault.
 - **A temporary song will not delete** — close the player, then use **Clean temp files**.
 - **The drive disappeared** — reconnect it without formatting, then reopen the vault.
 
