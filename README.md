@@ -1,4 +1,4 @@
-# SecureMusic USB
+# SecureUSB
 
 A Windows desktop app that keeps music and personal files inside one password-protected
 `.smusb` vault, with a dark Tkinter interface.
@@ -167,7 +167,7 @@ to the vault is detected by size, modification time, and a SHA-256 hash of the f
 
 ### Temporary playback copies
 
-- Directory: `%TEMP%\SecureMusicUSB-*`.
+- Directory: `%TEMP%\SecureUSB-*`.
 - Each song is random-named, and the app attempts to restrict permissions where Windows allows.
 - Files are deleted on lock, exit, or **Clean temp files**.
 - Startup cleanup removes leftovers older than 24 hours.
@@ -205,7 +205,7 @@ built or tested in this workspace:
 ```bat
 .venv\Scripts\python -m pip install -r requirements-build.txt
 .venv\Scripts\pyinstaller --noconfirm --clean --onefile --windowed ^
-  --name SecureMusicUSB securemusic_usb.py
+  --name SecureUSB securemusic_usb.py
 ```
 
 The result is `dist\SecureUSB.exe`. Test it with a copy of a vault before relying on it.
@@ -243,6 +243,6 @@ requirements-build.txt   optional PyInstaller dependency
 
 ## License and risk
 
-No license is included in this repository. This software is provided as-is, without warranty.
+See [LICENSE](LICENSE) for the applicable license. Keep independent backups of anything important.
 Keep independent backups of anything important, and do not rely on it as the only protection for
 irreplaceable data.
