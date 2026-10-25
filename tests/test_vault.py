@@ -114,9 +114,8 @@ class FileOperationTests(VaultTestBase):
         self.assertEqual(result.renamed, [])
         self.assertEqual(result.skipped, [])
         self.assertEqual(result.total_bytes, len(data))
-        self.assertIsNotNone(result.backup)
-        assert result.backup is not None
-        self.assertTrue(result.backup.exists())
+        self.assertIsNone(result.backup)
+        self.assertEqual(self.backups(), [])
 
         self.assertEqual(source.read_bytes(), data)
         self.assertTrue(source.exists())
@@ -128,10 +127,6 @@ class FileOperationTests(VaultTestBase):
         self.assertEqual(len(extracted.written), 1)
         self.assertEqual(extracted.total_bytes, len(data))
         self.assertEqual(source.read_bytes(), data)
-
-        backup_session = self.unlock(result.backup)
-        self.assertEqual(backup_session.list_files(), [])
-        backup_session.lock()
 
     def test_unicode_and_space_filenames_roundtrip(self) -> None:
         name = "My Song – ünïcode.flac"
@@ -205,20 +200,15 @@ class FileOperationTests(VaultTestBase):
         with self.assertRaises(UnknownFileError):
             session.extract(["missing.mp3"], self.dest)
 
-    def test_rename_preserves_content_and_creates_backup(self) -> None:
+    def test_rename_does_not_create_automatic_backup(self) -> None:
         session = self.create_vault({"old.mp3": b"music bytes"})
         backup = session.rename_file("old.mp3", "new.mp3")
-        self.assertIsNotNone(backup)
-        assert backup is not None
-        self.assertTrue(backup.exists())
+        self.assertIsNone(backup)
+        self.assertEqual(self.backups(), [])
         self.assertEqual([entry.name for entry in session.list_files()], ["new.mp3"])
 
         session.extract(["new.mp3"], self.dest)
         self.assertEqual((self.dest / "new.mp3").read_bytes(), b"music bytes")
-
-        backup_session = self.unlock(backup)
-        self.assertEqual([entry.name for entry in backup_session.list_files()], ["old.mp3"])
-        backup_session.lock()
 
     def test_rename_to_existing_name_is_rejected(self) -> None:
         session = self.create_vault({"a.mp3": b"a", "b.mp3": b"b"})
@@ -280,20 +270,23 @@ class FileOperationTests(VaultTestBase):
 
 
 class SafetyTests(VaultTestBase):
-    def test_backups_are_unique_encrypted_and_decryptable(self) -> None:
+    def test_only_deletion_creates_unique_encrypted_backup(self) -> None:
         session = VaultSession.create(self.vault_path, PASSWORD, params=TEST_KDF)
         session.add_files([self.make_source("one.mp3", b"UNIQUE-CONTENT-ONE")])
         session.add_files([self.make_source("two.mp3", b"UNIQUE-CONTENT-TWO")])
+        self.assertEqual(self.backups(), [])
 
+        result = session.delete_files(["two.mp3"])
+        self.assertIsNotNone(result.backup)
+        assert result.backup is not None
         backups = self.backups()
-        self.assertGreaterEqual(len(backups), 2)
-        self.assertEqual(len({backup.name for backup in backups}), len(backups))
-        for backup in backups:
-            raw = backup.read_bytes()
-            self.assertNotIn(b"UNIQUE-CONTENT-ONE", raw)
-            self.assertNotIn(b"UNIQUE-CONTENT-TWO", raw)
-            reopened = self.unlock(backup)
-            reopened.lock()
+        self.assertEqual(backups, [result.backup])
+        raw = result.backup.read_bytes()
+        self.assertNotIn(b"UNIQUE-CONTENT-ONE", raw)
+        self.assertNotIn(b"UNIQUE-CONTENT-TWO", raw)
+        reopened = self.unlock(result.backup)
+        self.assertEqual([entry.name for entry in reopened.list_files()], ["one.mp3", "two.mp3"])
+        reopened.lock()
 
     def test_failed_atomic_replace_leaves_vault_intact(self) -> None:
         session = self.create_vault({"a.mp3": b"a"})
@@ -318,9 +311,8 @@ class SafetyTests(VaultTestBase):
         self.assertEqual([entry.name for entry in reopened.list_files()], ["a.mp3"])
         reopened.lock()
 
-    def test_failed_backup_verification_aborts_change(self) -> None:
-        session = self.create_vault({"a.mp3": b"a"})
-        source = self.make_source("b.mp3", b"b")
+    def test_failed_deletion_backup_verification_aborts_delete(self) -> None:
+        session = self.create_vault({"a.mp3": b"a", "b.mp3": b"b"})
         before = self.vault_path.read_bytes()
         backups_before = set(self.backups())
 
@@ -328,12 +320,12 @@ class SafetyTests(VaultTestBase):
             "securemusic.vault._sha256_file", return_value=b"\x00" * 32
         ):
             with self.assertRaises(BackupError):
-                session.add_files([source])
+                session.delete_files(["a.mp3"])
 
         self.assertEqual(self.vault_path.read_bytes(), before)
         self.assertEqual(set(self.backups()), backups_before)
         self.assertEqual(
-            [entry.name for entry in session.list_files()], ["a.mp3"]
+            {entry.name for entry in session.list_files()}, {"a.mp3", "b.mp3"}
         )
 
     def test_external_vault_change_is_detected(self) -> None:
