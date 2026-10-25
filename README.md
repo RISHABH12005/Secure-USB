@@ -47,7 +47,7 @@ does not hide files on the drive, and does not bypass formatting or autorun limi
 
 ### Windows installer (recommended)
 
-Download `SecureMusicUSB-Setup.exe` from the latest successful workflow artifact or from GitHub Releases. Run the Setup wizard and follow its prompts. The standalone `SecureMusicUSB.exe` is also provided. These builds are not code-signed by default, so Windows SmartScreen may show a warning.
+Download `SecureUSB-Setup.exe` from the latest successful workflow artifact or from GitHub Releases. Run the Setup wizard and follow its prompts. The standalone `SecureUSB.exe` is also provided. These builds are not code-signed by default, so Windows SmartScreen may show a warning.
 
 ### macOS and Linux
 
@@ -208,7 +208,7 @@ built or tested in this workspace:
   --name SecureMusicUSB securemusic_usb.py
 ```
 
-The result is `dist\SecureMusicUSB.exe`. Test it with a copy of a vault before relying on it.
+The result is `dist\SecureUSB.exe`. Test it with a copy of a vault before relying on it.
 Unsigned PyInstaller executables are sometimes flagged by antivirus software.
 
 ## Project layout
