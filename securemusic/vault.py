@@ -4,10 +4,10 @@ A vault is one encrypted file that contains a zip archive of flat filenames.
 Every change follows the same safe sequence:
 
 1. decrypt to a private temporary zip and verify the vault did not change;
-2. build the new archive in a temporary file;
-3. validate the new archive (safe names, no duplicates, size limits);
-4. check free space, then copy the current encrypted vault to a unique
-   encrypted backup and verify the copy;
+2. build and validate the new archive in a temporary file;
+3. check free space for the atomic update and, for deletions, a backup;
+4. before deleting, copy the current encrypted vault to a unique backup and
+   verify it; adds and renames do not create automatic backups;
 5. encrypt the new archive to a temporary file, fsync it, and atomically
    replace the vault.
 
@@ -413,7 +413,7 @@ class VaultSession:
                     if name not in removed_set:
                         _copy_member(source_zip, target_zip, name)
 
-            backup = self._commit(build)
+            backup = self._commit(build, backup_before_change=True)
             return DeleteResult(removed=removed, backup=backup)
 
     def extract(
@@ -573,6 +573,8 @@ class VaultSession:
     def _commit(
         self,
         build: Callable[[zipfile.ZipFile, zipfile.ZipFile], None],
+        *,
+        backup_before_change: bool = False,
     ) -> Path | None:
         with self._lock:
             self._ensure_unlocked()
@@ -603,8 +605,10 @@ class VaultSession:
 
                 new_entries = _read_entries(new_zip_path)
                 self._verify_unchanged()
-                self._check_free_space(os.path.getsize(new_zip_path))
-                backup = self._create_backup()
+                self._check_free_space(
+                    os.path.getsize(new_zip_path), backup=backup_before_change
+                )
+                backup = self._create_backup() if backup_before_change else None
                 new_header = self._encrypt_and_replace(new_zip_path)
                 self._entries = new_entries
                 self._signature = _signature(self._path)
@@ -613,18 +617,23 @@ class VaultSession:
             finally:
                 _remove_quietly(new_zip_path)
 
-    def _check_free_space(self, new_payload_size: int) -> None:
+    def _check_free_space(
+        self, new_payload_size: int, *, backup: bool = False
+    ) -> None:
         try:
             current_size = self._path.stat().st_size
         except OSError:
             current_size = 0
-        needed = new_payload_size + current_size + FREE_SPACE_MARGIN
+        # Atomic replacement needs space for the old vault and new temporary
+        # encrypted vault. Deletion additionally needs a second old-vault copy.
+        needed = new_payload_size + current_size * (2 if backup else 1) + FREE_SPACE_MARGIN
         free = shutil.disk_usage(self._path.parent).free
         if free < needed:
+            detail = "including the deletion backup and temporary files" if backup else "for the temporary update files"
             raise InsufficientSpaceError(
                 "Not enough free space for a safe update. "
-                f"About {_fmt_bytes(needed)} is needed (including backup and temporary "
-                f"files) but only {_fmt_bytes(free)} is available."
+                f"About {_fmt_bytes(needed)} is needed ({detail}) "
+                f"but only {_fmt_bytes(free)} is available."
             )
 
     def _create_backup(self) -> Path:
