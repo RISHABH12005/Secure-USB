@@ -1,4 +1,4 @@
-"""Dark Tkinter interface for SecureMusic USB."""
+"""Dark Tkinter interface for SecureUSB."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from .errors import (
     InvalidFilenameError,
     MediaError,
     PasswordPolicyError,
-    SecureMusicError,
+    SecureUSBError,
     UnknownFileError,
     VaultChangedError,
     VaultFormatError,
@@ -44,7 +44,7 @@ from .vault import (
     cleanup_stale_payload_files,
 )
 
-APP_TITLE = "SecureMusic USB"
+APP_TITLE = "SecureUSB"
 
 BG = "#10141b"
 SURFACE = "#181e29"
@@ -370,7 +370,7 @@ class SafetyDialog(tk.Toplevel):
         tk.Label(
             frame,
             text=(
-                "SecureMusic USB protects only the files stored inside its encrypted "
+                "SecureUSB protects only the files stored inside its encrypted "
                 "vault file. Read this before relying on it."
             ),
             bg=BG,
@@ -1023,7 +1023,7 @@ class SecureMusicApp:
             messagebox_title = "File operation failed"
             message = str(exc)
             short = "File operation failed."
-        elif isinstance(exc, SecureMusicError):
+        elif isinstance(exc, SecureUSBError):
             messagebox_title = "Operation failed"
             message = str(exc)
             short = "Operation failed."
@@ -1249,7 +1249,7 @@ class SecureMusicApp:
         self._last_dir = destination
         try:
             conflicts = session.preview_extract_conflicts(names, destination)
-        except SecureMusicError as exc:
+        except SecureUSBError as exc:
             self._handle_error(exc)
             return
 
