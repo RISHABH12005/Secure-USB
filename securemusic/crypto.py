@@ -1,4 +1,4 @@
-"""Authenticated encryption for SecureMusic USB vaults.
+"""Authenticated encryption for SecureUSB vaults.
 
 Current vault format (version 2)::
 
@@ -140,7 +140,7 @@ def _parse_header(fp: BinaryIO) -> VaultHeader:
         raise VaultFormatError("The vault file could not be read.") from exc
 
     if len(prefix) < 7:
-        raise VaultFormatError("This file is too small to be a SecureMusic vault.")
+        raise VaultFormatError("This file is too small to be a SecureUSB vault.")
 
     if prefix[:7] == MAGIC_V1:
         fp.seek(len(MAGIC_V1))
@@ -164,7 +164,7 @@ def _parse_header(fp: BinaryIO) -> VaultHeader:
 
     if prefix != MAGIC_V2:
         raise VaultFormatError(
-            "This is not a SecureMusic USB vault (unrecognised file header)."
+            "This is not a SecureUSB vault (unrecognised file header)."
         )
 
     fp.seek(0)
@@ -173,7 +173,7 @@ def _parse_header(fp: BinaryIO) -> VaultHeader:
         raise VaultFormatError("The vault header is truncated.")
     magic, version, kdf_id, n, r, p = _HEADER_STRUCT.unpack(fixed)
     if magic != MAGIC_V2:
-        raise VaultFormatError("This is not a SecureMusic USB vault.")
+        raise VaultFormatError("This is not a SecureUSB vault.")
     if version != FORMAT_VERSION:
         raise VaultFormatError(
             f"Vault format version {version} is not supported by this version of the app."
