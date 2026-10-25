@@ -242,6 +242,4 @@ requirements-build.txt   optional PyInstaller dependency
 
 ## License and risk
 
-See [LICENSE](LICENSE) for the applicable license. Keep independent backups of anything important.
-Keep independent backups of anything important, and do not rely on it as the only protection for
-irreplaceable data.
+See [LICENSE](LICENSE) for the applicable license. Keep independent backups of important data; do not rely on this application as the only protection for irreplaceable files.
