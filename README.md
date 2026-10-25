@@ -1,10 +1,15 @@
 # SecureUSB
 
-A Windows desktop app that keeps music and personal files inside one password-protected
-`.smusb` vault, with a dark Tkinter interface.
+A desktop app that stores documents, source code, photos, videos, audio, and other files inside a password-protected `.smusb` encrypted vault.
 
 The vault is a single encrypted file. The app does **not** encrypt the USB drive itself,
 does not hide files on the drive, and does not bypass formatting or autorun limits.
+
+## Important security boundary
+
+SecureUSB encrypts the contents of its `.smusb` vault. It does not encrypt or lock the whole USB drive, and it cannot stop Windows or another computer from deleting the vault file or formatting the drive. For whole-drive protection on Windows, use **BitLocker To Go** on a supported removable drive and keep a separate backup. Keep the `.smusb` vault on the selected drive and unlock it with SecureUSB when you need your files.
+
+The media preview is only a convenience for opening audio/video files. SecureUSB is a general-purpose file vault, not a music-only player. External apps may need temporary decrypted copies; extracted files are unencrypted outside the vault.
 
 ## Features
 
