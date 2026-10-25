@@ -199,8 +199,7 @@ Ruff settings live in `pyproject.toml`.
 
 ## Packaging (optional, not verified here)
 
-PyInstaller is listed in `requirements-build.txt` but the packaged executable has **not** been
-built or tested in this workspace:
+PyInstaller is listed in `requirements-build.txt`. CI builds the packages on supported runners; always test a downloaded build with a copy of a vault before relying on it:
 
 ```bat
 .venv\Scripts\python -m pip install -r requirements-build.txt
