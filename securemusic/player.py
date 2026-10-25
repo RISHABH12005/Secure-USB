@@ -37,7 +37,7 @@ AUDIO_EXTENSIONS = frozenset(
     }
 )
 
-TEMP_PREFIX = "SecureMusicUSB-"
+TEMP_PREFIX = "SecureUSB-"
 
 
 @dataclass
