@@ -1,6 +1,6 @@
-#define MyAppName "SecureMusic USB"
+#define MyAppName "SecureUSB"
 #define MyAppVersion "1.0.0"
-#define MyPublisher "SecureMusic USB"
+#define MyPublisher "SecureUSB"
 #define MyExeName "SecureUSB.exe"
 
 [Setup]
