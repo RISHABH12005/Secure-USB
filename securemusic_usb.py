@@ -1,4 +1,4 @@
-"""SecureMusic USB launcher.
+"""SecureUSB launcher.
 
 Run with ``py securemusic_usb.py`` (or ``py -m securemusic``).
 """
@@ -15,7 +15,7 @@ def main() -> int:
         missing = exc.name or ""
         if missing.startswith("cryptography"):
             print(
-                "SecureMusic USB needs the 'cryptography' package.\n\n"
+                "SecureUSB needs the 'cryptography' package.\n\n"
                 "Install dependencies with:\n"
                 "  py -m pip install -r requirements.txt\n\n"
                 "Or use a virtual environment:\n"
