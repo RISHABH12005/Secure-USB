@@ -1,17 +1,46 @@
-name: Build desktop installers
+name: Test and package SecureMusic USB
 
 on:
+  pull_request:
   push:
-    tags:
-      - "v*"
+    branches: [main]
+    tags: ["v*"]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  test-and-build:
-    name: Test and package (${{ matrix.os }})
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install Tk on Linux
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . pytest
+      - name: Run test suite
+        run: python -m pytest -q
+
+  package:
+    name: Package for ${{ matrix.os }}
+    if: github.event_name != 'pull_request'
+    needs: test
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -22,41 +51,61 @@ jobs:
             artifact: SecureMusicUSB-macOS
           - os: ubuntu-latest
             artifact: SecureMusicUSB-Linux
-    runs-on: ${{ matrix.os }}
     steps:
-      - name: Check out source
-        uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
-      - name: Install Linux Tk support
+      - name: Install Linux Tk build dependency
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-tk
-      - name: Install project and build dependencies
+      - name: Install build dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e . pytest pyinstaller
-      - name: Run tests
-        run: python -m pytest -q
+          python -m pip install -e . pyinstaller
       - name: Build Windows executable
         if: runner.os == 'Windows'
         run: pyinstaller --noconfirm --clean --onefile --windowed --name SecureMusicUSB securemusic_usb.py
-      - name: Build macOS executable
+      - name: Build Windows Setup installer
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install innosetup --no-progress -y
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/SecureMusicUSB.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build macOS app bundle
         if: runner.os == 'macOS'
-        run: pyinstaller --noconfirm --clean --onefile --name SecureMusicUSB securemusic_usb.py
+        run: |
+          pyinstaller --noconfirm --clean --windowed --name SecureMusicUSB securemusic_usb.py
+          ditto -c -k --sequesterRsrc --keepParent dist/SecureMusicUSB.app dist/SecureMusicUSB-macOS.zip
       - name: Build Linux executable
         if: runner.os == 'Linux'
         run: pyinstaller --noconfirm --clean --onefile --name SecureMusicUSB securemusic_usb.py
-      - name: Upload packaged app
+      - name: Stage Windows downloads
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path release-files | Out-Null
+          Copy-Item dist/SecureMusicUSB.exe release-files/
+          Copy-Item installer/output/SecureMusicUSB-Setup.exe release-files/
+      - name: Stage macOS download
+        if: runner.os == 'macOS'
+        run: mkdir -p release-files && cp dist/SecureMusicUSB-macOS.zip release-files/
+      - name: Stage Linux download
+        if: runner.os == 'Linux'
+        run: mkdir -p release-files && cp dist/SecureMusicUSB release-files/SecureMusicUSB-Linux
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
-          path: |
-            dist/SecureMusicUSB
-            dist/SecureMusicUSB.exe
+          path: release-files/*
           if-no-files-found: error
           retention-days: 14
+      - name: Upload release assets
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-files/*
