@@ -68,7 +68,7 @@ jobs:
           python -m pip install -e . pyinstaller
       - name: Build Windows executable
         if: runner.os == 'Windows'
-        run: pyinstaller --noconfirm --clean --onefile --windowed --name SecureMusicUSB securemusic_usb.py
+        run: pyinstaller --noconfirm --clean --onefile --windowed --name SecureUSB securemusic_usb.py
       - name: Build Windows Setup installer
         if: runner.os == 'Windows'
         shell: pwsh
@@ -79,24 +79,24 @@ jobs:
       - name: Build macOS app bundle
         if: runner.os == 'macOS'
         run: |
-          pyinstaller --noconfirm --clean --windowed --name SecureMusicUSB securemusic_usb.py
-          ditto -c -k --sequesterRsrc --keepParent dist/SecureMusicUSB.app dist/SecureMusicUSB-macOS.zip
+          pyinstaller --noconfirm --clean --windowed --name SecureUSB securemusic_usb.py
+          ditto -c -k --sequesterRsrc --keepParent dist/SecureUSB.app dist/SecureUSB-macOS.zip
       - name: Build Linux executable
         if: runner.os == 'Linux'
-        run: pyinstaller --noconfirm --clean --onefile --name SecureMusicUSB securemusic_usb.py
+        run: pyinstaller --noconfirm --clean --onefile --name SecureUSB securemusic_usb.py
       - name: Stage Windows downloads
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path release-files | Out-Null
-          Copy-Item dist/SecureMusicUSB.exe release-files/
-          Copy-Item installer/output/SecureMusicUSB-Setup.exe release-files/
+          Copy-Item dist/SecureUSB.exe release-files/
+          Copy-Item installer/output/SecureUSB-Setup.exe release-files/
       - name: Stage macOS download
         if: runner.os == 'macOS'
-        run: mkdir -p release-files && cp dist/SecureMusicUSB-macOS.zip release-files/
+        run: mkdir -p release-files && cp dist/SecureUSB-macOS.zip release-files/
       - name: Stage Linux download
         if: runner.os == 'Linux'
-        run: mkdir -p release-files && cp dist/SecureMusicUSB release-files/SecureMusicUSB-Linux
+        run: mkdir -p release-files && cp dist/SecureMusicUSB release-files/SecureUSB-Linux
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
